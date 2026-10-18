@@ -1,45 +1,74 @@
-
 # Actividad 5. Gestión de Proyectos de Inteligencia Artificial
 
 ## Predicción de partículas PM2.5 en la Ciudad de México mediante aprendizaje automático
 
 ### 1. Descripción del proyecto
 
-En este proyecto se desarrolla una solución de aprendizaje automático para estimar la concentración de partículas PM2.5 del día siguiente en la Ciudad de México, utilizando registros históricos de contaminación atmosférica.
+En este proyecto desarrollé un ejercicio de aprendizaje automático para estimar la concentración de partículas PM2.5 del día siguiente en la Ciudad de México, utilizando registros históricos de contaminación atmosférica.
 
-El propósito es analizar si la información de contaminantes y las mediciones de días anteriores permiten anticipar el comportamiento de las partículas PM2.5.
+El problema seleccionado es relevante porque las partículas PM2.5 forman parte de los contaminantes que se monitorean para evaluar la calidad del aire. Poder anticipar sus concentraciones puede aportar información útil para comprender su comportamiento y apoyar futuros sistemas de monitoreo ambiental.
 
-Para ello, se realiza la preparación y el versionamiento de los datos, así como el entrenamiento y la comparación de dos modelos de regresión: Ridge Regression y Random Forest Regressor.
+Para desarrollar el proyecto utilicé un conjunto de datos públicos asociado con la Red Automática de Monitoreo Atmosférico (RAMA) de la Ciudad de México.
 
-Los experimentos se registrarán mediante MLflow, con el objetivo de facilitar la comparación de resultados y mantener la trazabilidad de los modelos.
+El trabajo comprendió la revisión de la calidad de los datos, su preparación, la creación de variables históricas, el entrenamiento de modelos de regresión, el ajuste de hiperparámetros y la evaluación de los resultados.
+
+Los algoritmos seleccionados fueron Ridge Regression y Random Forest Regressor. Ambos se compararon mediante métricas estandarizadas y validación cruzada temporal.
+
+También utilicé MLflow para registrar los experimentos, conservar sus parámetros y métricas, almacenar los modelos entrenados y comprobar que podían recuperarse posteriormente.
+
+Finalmente, desarrollé un script independiente de entrenamiento y verifiqué que reproducía los resultados obtenidos originalmente en Google Colab.
 
 ### 2. Objetivo
 
-Desarrollar y comparar dos modelos de aprendizaje automático capaces de estimar la concentración de PM2.5 del día siguiente, utilizando datos públicos de calidad del aire y aplicando procedimientos reproducibles de preparación, entrenamiento, evaluación y registro de experimentos.
+Desarrollar, entrenar y comparar dos modelos de aprendizaje automático para estimar la concentración de partículas PM2.5 del día siguiente en la Ciudad de México, utilizando información histórica de calidad del aire.
+
+Como parte del objetivo, se aplicaron procedimientos de preparación y versionamiento de datos, validación cruzada temporal, ajuste de hiperparámetros y registro de experimentos mediante MLflow.
+
+El propósito no fue únicamente obtener predicciones, sino también documentar el procedimiento y comprobar que los resultados podían reproducirse.
 
 ### 3. Fuente y características del dataset
 
-**Fuente:** Red Automática de Monitoreo Atmosférico (RAMA), Secretaría del Medio Ambiente de la Ciudad de México.
+**Fuente de referencia:** Red Automática de Monitoreo Atmosférico (RAMA), Secretaría del Medio Ambiente de la Ciudad de México.
 
-**Portal oficial:**
+**Portal de datos abiertos:**
+
 https://www.datos.cdmx.gob.mx/dataset/red-automatica-de-monitoreo-atmosferico
 
-El archivo utilizado contiene registros diarios correspondientes al periodo del 1 de enero de 2015 al 31 de mayo de 2023.
+El archivo CSV utilizado en el proyecto contiene registros diarios comprendidos entre el 1 de enero de 2015 y el 31 de mayo de 2023.
+
+El conjunto original contiene 3,073 registros y nueve columnas: una fecha y ocho variables relacionadas con contaminantes atmosféricos.
 
 | Característica | Dataset original | Dataset preparado |
-|---|---|---|
+|---|---:|---:|
 | Registros | 3,073 | 3,043 |
 | Columnas | 9 | 20 |
 | Frecuencia | Diaria | Diaria |
 | Valores faltantes | 0 | 0 |
 | Fechas duplicadas | 0 | 0 |
-| Periodo | 2015-01-01 a 2023-05-31 | 2015-01-30 a 2023-05-30 |
+| Fecha inicial | 2015-01-01 | 2015-01-30 |
+| Fecha final | 2023-05-31 | 2023-05-30 |
 
-El dataset original incluye la fecha y ocho variables de contaminantes: CO, NO, NO2, NOX, O3, PM10, PM25 y SO2.
+Las variables originales son:
 
-Las unidades de medición y la metodología de agregación del archivo deberán confirmarse con la documentación oficial antes de interpretar las concentraciones en términos ambientales.
+- `fecha`: fecha correspondiente al registro.
+- `CO`: monóxido de carbono.
+- `NO`: óxido nítrico.
+- `NO2`: dióxido de nitrógeno.
+- `NOX`: óxidos de nitrógeno.
+- `O3`: ozono.
+- `PM10`: partículas suspendidas PM10.
+- `PM25`: partículas finas PM2.5.
+- `SO2`: dióxido de azufre.
+
+La variable principal del proyecto es PM2.5, mientras que los demás contaminantes se utilizan como información predictora.
+
+Las unidades de medición, la procedencia exacta de los agregados diarios y la metodología de agregación del archivo utilizado requieren confirmación con la documentación de la fuente antes de interpretar los resultados como concentraciones ambientales oficiales.
+
+El dataset preparado conserva las observaciones originales necesarias y añade variables para realizar la predicción del día siguiente.
 
 ### 4. Estructura del repositorio
+
+El proyecto se encuentra organizado de la siguiente manera:
 
 ```text
 Actividad-5_ABG/
@@ -51,72 +80,128 @@ Actividad-5_ABG/
 |-- fuentes/
 |   |-- entrena.ipynb
 |   |-- datos_prep.py
-|   |-- train.py                  [pendiente]
+|   |-- train.py
 |
 |-- README.md
 |-- CHANGELOG.md
+|-- requirements.txt
 ```
+
+Las carpetas `datos/` y `fuentes/` también pueden contener archivos `.gitkeep`, utilizados durante la creación inicial de la estructura.
 
 **Descripción de los archivos:**
 
-- `datos/ebc079e5-bd11-4830-b595-14292f753575.csv`: registros originales utilizados en el proyecto.
-- `datos/datos_limp.csv`: conjunto preparado para el entrenamiento.
-- `fuentes/entrena.ipynb`: notebook de Google Colab con el desarrollo experimental.
-- `fuentes/datos_prep.py`: funciones de validación y preparación de datos.
-- `fuentes/train.py`: script de entrenamiento y registro de experimentos, pendiente de implementación.
-- `README.md`: descripción y guía de reproducción del proyecto.
-- `CHANGELOG.md`: historial de cambios y decisiones realizadas.
+- `datos/ebc079e5-bd11-4830-b595-14292f753575.csv`: conjunto original de datos utilizado para el experimento.
+- `datos/datos_limp.csv`: conjunto preparado para el entrenamiento y la evaluación.
+- `fuentes/entrena.ipynb`: notebook de Google Colab con las 14 celdas definitivas del desarrollo experimental.
+- `fuentes/datos_prep.py`: funciones reutilizables para validar, transformar y dividir los datos.
+- `fuentes/train.py`: script independiente para reproducir el entrenamiento, Grid Search, evaluación y registro en MLflow.
+- `README.md`: documentación general y guía de reproducción.
+- `CHANGELOG.md`: historial de cambios y decisiones del proyecto.
+- `requirements.txt`: dependencias principales y versiones del entorno utilizado.
+
+El repositorio se administra mediante GitHub, utilizando commits para conservar el historial de modificaciones.
 
 ### 5. Diagnóstico y preparación de datos
 
-Se realizó un análisis inicial para verificar la estructura, la continuidad temporal y la calidad de los registros.
+Antes de entrenar los modelos realicé un diagnóstico para conocer la estructura y calidad del conjunto original.
 
-Los resultados mostraron que no existen valores faltantes, registros duplicados, fechas repetidas ni concentraciones negativas.
+Las verificaciones incluyeron:
 
-También se identificaron observaciones estadísticamente atípicas mediante el método del rango intercuartílico (IQR).
+- Cantidad de registros y variables.
+- Tipos de datos.
+- Interpretación de fechas.
+- Continuidad de la secuencia diaria.
+- Identificación de valores faltantes.
+- Detección de registros duplicados.
+- Revisión de valores negativos e iguales a cero.
+- Cálculo de estadísticas descriptivas.
+- Identificación de posibles valores atípicos.
 
-Estas observaciones se conservaron inicialmente porque podrían representar episodios reales de contaminación y no necesariamente errores de medición.
+Los resultados mostraron que el conjunto original no contenía valores faltantes, registros duplicados, fechas repetidas ni concentraciones negativas.
 
-Posteriormente se realizó un análisis temporal de PM2.5, incluyendo su evolución diaria, promedios anuales, comportamiento mensual y distribución de valores.
+También se verificó que la secuencia diaria no presentaba interrupciones durante el periodo analizado.
+
+Para identificar posibles valores atípicos utilicé el método del rango intercuartílico (IQR).
+
+Este procedimiento permitió identificar observaciones alejadas del comportamiento habitual de algunas variables. Sin embargo, decidí conservarlas porque podrían corresponder a episodios reales de contaminación y no necesariamente a errores de medición.
+
+Posteriormente realicé un análisis exploratorio de PM2.5 mediante:
+
+- Evolución diaria de concentraciones.
+- Promedio móvil de 30 días.
+- Comparación de promedios anuales.
+- Comportamiento mensual.
+- Identificación de días con concentraciones elevadas.
+- Diagramas de caja para comparar distribuciones anuales.
+
+El análisis permitió observar variaciones temporales y posibles patrones estacionales que justificaron la incorporación de variables históricas y temporales durante la preparación del conjunto de entrenamiento.
 
 ### 6. Ingeniería de características
 
-Para preparar el conjunto de entrenamiento se realizaron las siguientes transformaciones:
+Para transformar el problema en una tarea de regresión supervisada, creé la variable objetivo:
 
-- Creación de la variable objetivo `PM25_siguiente_dia`.
-- Incorporación de concentraciones históricas de PM2.5 con rezagos de 1, 2, 3 y 7 días.
+`PM25_siguiente_dia`
+
+Esta variable representa la concentración de PM2.5 correspondiente al día posterior al de las variables predictoras.
+
+Las transformaciones principales fueron:
+
+- Creación de la variable objetivo del día siguiente.
+- Incorporación de rezagos históricos de PM2.5 de 1, 2, 3 y 7 días.
 - Cálculo de promedios móviles de 7 y 30 días.
-- Generación de variables temporales relacionadas con el mes y el día de la semana.
+- Incorporación de variables temporales relacionadas con el calendario.
 - Representación cíclica del mes mediante funciones seno y coseno.
+- Selección de 17 variables predictoras.
 
-El conjunto final contiene 17 variables predictoras.
+La creación de variables históricas permite que los modelos utilicen información de días anteriores para estimar el comportamiento del día siguiente.
 
-Se excluyeron 30 registros debido a la falta de historial suficiente para calcular determinadas variables y a la ausencia del valor objetivo del último día.
+Se excluyeron 30 registros debido a la falta de historial suficiente para determinadas transformaciones y a la ausencia del valor objetivo correspondiente al último día.
 
-El dataset preparado contiene 3,043 registros y 20 columnas.
+Después de la preparación, el conjunto final quedó integrado por:
+
+- 3,043 registros.
+- 20 columnas.
+- 17 variables predictoras.
+- Una variable objetivo denominada `PM25_siguiente_dia`.
+
+El procedimiento fue implementado en el notebook y posteriormente reproducido mediante `datos_prep.py`.
+
+Se verificó que ambos procedimientos generaran el mismo conjunto preparado.
 
 ### 7. División de entrenamiento y prueba
 
-Los datos se dividieron cronológicamente para evitar mezclar observaciones pasadas y futuras.
+Debido a que los registros corresponden a una secuencia temporal, decidí realizar una división cronológica en lugar de distribuir aleatoriamente las observaciones.
+
+Esta decisión permite evaluar los modelos sobre un periodo posterior al utilizado para entrenarlos.
 
 | Conjunto | Registros | Proporción |
 |---|---:|---:|
 | Entrenamiento | 2,434 | 80% |
 | Prueba | 609 | 20% |
+| Total | 3,043 | 100% |
 
 **Periodo de entrenamiento:** 30 de enero de 2015 al 28 de septiembre de 2021.
 
 **Periodo de prueba:** 29 de septiembre de 2021 al 30 de mayo de 2023.
 
-Las fechas corresponden al día de las variables predictoras. La concentración objetivo corresponde al día siguiente.
+Las fechas corresponden al día de las variables predictoras. La concentración que se busca estimar pertenece al día siguiente.
 
-La estandarización de variables se realizará durante el entrenamiento, utilizando exclusivamente los datos correspondientes a cada partición de entrenamiento.
+Durante el entrenamiento se utilizó validación cruzada temporal mediante `TimeSeriesSplit`, con cinco particiones y una separación de una observación entre entrenamiento y validación.
 
-### 8. Herramientas utilizadas
+En Ridge Regression se utilizó `StandardScaler` dentro de un `Pipeline`, de manera que la estandarización se ajustara únicamente con los registros de entrenamiento correspondientes a cada partición.
 
-El proyecto se desarrolla principalmente en Google Colab, utilizando Python y las siguientes bibliotecas:
+Random Forest Regressor se entrenó sin estandarización, ya que su funcionamiento se basa en árboles de decisión.
 
-| Herramienta | Versión registrada |
+El conjunto de prueba permaneció reservado durante la selección de hiperparámetros y se utilizó posteriormente para la evaluación final.
+
+### 8. Herramientas y dependencias
+
+El proyecto fue desarrollado principalmente en Google Colab, utilizando Python y bibliotecas especializadas en análisis de datos y aprendizaje automático.
+
+Las versiones registradas durante la ejecución fueron:
+
+| Herramienta | Versión |
 |---|---|
 | Python | 3.13.16 |
 | Pandas | 2.2.3 |
@@ -125,108 +210,321 @@ El proyecto se desarrolla principalmente en Google Colab, utilizando Python y la
 | Seaborn | 0.13.2 |
 | Scikit-learn | 1.6.1 |
 | MLflow | 3.17.1 |
+| Cloudpickle | 3.1.2 |
 
-Se utiliza una semilla aleatoria de 42 para favorecer la reproducibilidad de los experimentos.
+Se utilizó una semilla aleatoria fija de 42 para favorecer la reproducibilidad.
 
-Las versiones corresponden al entorno utilizado durante la preparación inicial del proyecto.
+Las dependencias principales se encuentran documentadas en `requirements.txt`.
 
-### 9. Reproducción de la preparación de datos
+Para instalarlas desde la raíz del repositorio:
 
-Para reproducir la preparación:
-
-1. Descargar o clonar el repositorio.
-2. Disponer de un entorno Python con las dependencias necesarias.
-3. Cargar el CSV original desde la carpeta `datos/`.
-4. Importar las funciones de `fuentes/datos_prep.py`.
-5. Ejecutar `preparar_dataset()` sobre los datos originales.
-6. Verificar que se obtengan 3,043 registros y 17 variables predictoras.
-7. Ejecutar `dividir_datos()` para obtener los conjuntos de entrenamiento y prueba.
-
-Ejemplo de ejecución desde la raíz del repositorio:
-
-```python
-import pandas as pd
-from fuentes.datos_prep import preparar_dataset, dividir_datos
-
-archivo = "datos/ebc079e5-bd11-4830-b595-14292f753575.csv"
-
-df_original = pd.read_csv(archivo)
-
-df_preparado, variables, objetivo = preparar_dataset(
-    df_original
-)
-
-X_train, X_test, y_train, y_test = dividir_datos(
-    df_preparado
-)
-
-print("Registros preparados:", len(df_preparado))
-print("Variables predictoras:", len(variables))
-print("Entrenamiento:", len(X_train))
-print("Prueba:", len(X_test))
+```bash
+python -m pip install -r requirements.txt
 ```
 
-La preparación fue verificada comparando los resultados del script con los obtenidos previamente en Google Colab.
+Se recomienda utilizar un entorno virtual para evitar conflictos con bibliotecas de otros proyectos.
+
+La instalación completa en un entorno limpio, así como la compatibilidad de todas las dependencias transitivas, todavía requiere una verificación adicional.
+
+### 9. Reproducción del proyecto
+
+El proyecto puede consultarse mediante el notebook de Google Colab o ejecutarse utilizando los scripts Python del repositorio.
+
+#### 9.1. Descargar el repositorio
+
+Desde una terminal con Git instalado:
+
+```bash
+git clone https://github.com/Aletz44/Actividad-5_ABG.git
+cd Actividad-5_ABG
+```
+
+#### 9.2. Instalar las dependencias
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+#### 9.3. Reproducir la preparación de datos
+
+El archivo `fuentes/datos_prep.py` contiene las funciones utilizadas para validar y preparar el dataset.
+
+El notebook `fuentes/entrena.ipynb` documenta la ejecución de estas funciones y las comprobaciones realizadas.
+
+El procedimiento genera 3,043 registros preparados y selecciona 17 variables predictoras.
+
+#### 9.4. Ejecutar el entrenamiento independiente
+
+Desde la raíz del repositorio:
+
+```bash
+python fuentes/train.py
+```
+
+El script realiza automáticamente:
+
+1. Carga del archivo original.
+2. Preparación de variables.
+3. División cronológica de entrenamiento y prueba.
+4. Configuración de Ridge Regression y Random Forest Regressor.
+5. Ajuste de hiperparámetros mediante Grid Search.
+6. Validación cruzada temporal con cinco particiones.
+7. Evaluación final con MAE, RMSE y R².
+8. Registro de experimentos y modelos en MLflow.
+9. Generación de archivos CSV con resultados y predicciones.
+10. Recuperación de modelos para comprobar su funcionamiento.
+
+El script utiliza un experimento independiente denominado:
+
+`RAMA_PM25_TrainScript`
+
+Su información se almacena localmente en la carpeta `mlflow_train/`, creada durante la ejecución.
+
+Los archivos CSV de resultados se generan en `resultados/`.
+
+Estas carpetas son productos de la ejecución y no forman parte de la estructura inicial obligatoria del repositorio.
+
+#### 9.5. Validación independiente realizada
+
+Para comprobar la reproducibilidad, ejecuté `train.py` desde una copia independiente del repositorio en Google Colab.
+
+El proceso terminó con código de salida 0 y generó los resultados esperados para ambos modelos.
+
+Posteriormente comparé las métricas obtenidas con las del notebook original.
+
+Las diferencias fueron inferiores a 0.0001 en las métricas contrastadas, dentro de la tolerancia utilizada para considerar el redondeo de los resultados.
+
+También verifiqué que el experimento independiente de MLflow contuviera dos ejecuciones finalizadas, con sus métricas registradas y modelos recuperables.
+
+Esta prueba confirmó la reproducibilidad dentro del entorno utilizado. No representa todavía una validación completa de portabilidad en un sistema operativo o entorno Python diferente.
 
 ### 10. Integridad y versionamiento
 
-El archivo original se conserva sin modificaciones.
+El dataset original se conserva sin modificar sus mediciones.
 
-El dataset preparado fue exportado y verificado mediante una comparación de su contenido con el resultado generado por `datos_prep.py`.
+El conjunto preparado se encuentra en:
+
+`datos/datos_limp.csv`
+
+Durante la exportación se verificaron:
+
+- Cantidad de registros.
+- Cantidad y orden de columnas.
+- Fechas.
+- Equivalencia de valores numéricos.
+- Integridad del archivo mediante SHA-256.
 
 **SHA-256 de datos_limp.csv:**
 
 `93c76aa30597174fce7bbd49092aafdd586bd56786415091bb3e79177dab1d8b`
 
-El historial de modificaciones se documenta en `CHANGELOG.md` y en los commits del repositorio.
+La huella permite comprobar si el contenido exacto del archivo ha cambiado.
 
-### 11. Entrenamiento y evaluación de modelos
+Los cambios del proyecto se documentan mediante commits de GitHub y el archivo `CHANGELOG.md`.
 
-**Estado: pendiente de implementación.**
+Para facilitar la trazabilidad, los experimentos también incluyen identificadores de ejecución, parámetros, métricas y artefactos registrados en MLflow.
 
-Se contempla entrenar y comparar:
+### 11. Entrenamiento, ajuste y evaluación de modelos
+
+Se entrenaron y compararon dos algoritmos de regresión:
 
 - Ridge Regression.
 - Random Forest Regressor.
 
-Se utilizará Grid Search con validación cruzada temporal para ajustar los hiperparámetros.
+Ridge Regression utiliza una relación lineal regularizada entre las variables predictoras y la concentración estimada.
 
-Las métricas previstas son:
+Random Forest Regressor combina múltiples árboles de decisión y permite representar relaciones no lineales.
 
-- MAE: error absoluto medio.
-- RMSE: raíz del error cuadrático medio.
-- R²: coeficiente de determinación.
+#### 11.1. Entrenamiento inicial
 
-Los parámetros, métricas y modelos se registrarán mediante MLflow.
+Primero evalué ambos modelos con configuraciones iniciales, utilizando cinco particiones de validación cruzada temporal.
+
+Los resultados fueron:
+
+| Modelo | MAE | RMSE | R² |
+|---|---:|---:|---:|
+| Ridge Regression | 4.3075 | 5.8610 | 0.5253 |
+| Random Forest Regressor | 4.4741 | 5.9944 | 0.4965 |
+
+Ridge Regression obtuvo inicialmente un menor error promedio y un tiempo de evaluación considerablemente inferior.
+
+Estos resultados sirvieron como referencia para medir las mejoras posteriores.
+
+#### 11.2. Ajuste de hiperparámetros
+
+Utilicé `GridSearchCV` con cinco particiones de validación temporal y MAE como criterio principal de selección.
+
+Para Ridge Regression se evaluaron cuatro valores de regularización:
+
+`alpha = [0.1, 1.0, 10.0, 100.0]`
+
+Para Random Forest se evaluaron combinaciones de:
+
+- `n_estimators`: 100 y 200 árboles.
+- `max_depth`: 5, 10 y sin límite explícito.
+- `min_samples_leaf`: 1, 3 y 5 observaciones.
+
+En total se evaluaron 22 configuraciones mediante 110 ajustes de validación cruzada, además de los reajustes finales de cada búsqueda.
+
+Los mejores hiperparámetros fueron:
+
+| Modelo | Hiperparámetros seleccionados |
+|---|---|
+| Ridge Regression | `alpha=100.0` |
+| Random Forest | `n_estimators=200`, `max_depth=10`, `min_samples_leaf=5` |
+
+#### 11.3. Resultados después de Grid Search
+
+| Modelo | MAE CV | RMSE CV | R² CV |
+|---|---:|---:|---:|
+| Ridge Regression | 4.2367 | 5.7668 | 0.5405 |
+| Random Forest Regressor | 4.3197 | 5.8419 | 0.5264 |
+
+El ajuste redujo el MAE promedio de Ridge aproximadamente un 1.64% y el de Random Forest un 3.45% respecto a sus configuraciones iniciales.
+
+Aunque Random Forest presentó una mejora porcentual mayor, Ridge mantuvo el menor error promedio de validación.
+
+#### 11.4. Evaluación final sobre el conjunto de prueba
+
+Después de seleccionar los hiperparámetros, evalué los modelos sobre los 609 registros reservados.
+
+También incorporé un modelo de referencia denominado persistencia, que estima la concentración del día siguiente utilizando la concentración observada el día actual.
+
+Los resultados fueron:
+
+| Modelo | MAE | RMSE | R² |
+|---|---:|---:|---:|
+| Ridge Regression | 3.6493 | 4.9894 | 0.4861 |
+| Random Forest Regressor | 3.6743 | 5.1004 | 0.4629 |
+| Persistencia | 4.1401 | 5.9459 | 0.2701 |
+
+Ridge Regression obtuvo el menor MAE y RMSE, así como el mayor R².
+
+Respecto al modelo de persistencia, Ridge redujo el MAE aproximadamente un 11.86%, mientras que Random Forest consiguió una reducción del 11.25%.
+
+Estos resultados muestran que ambos algoritmos mejoraron la predicción promedio frente a la estrategia de referencia durante el periodo evaluado.
+
+La diferencia entre Ridge y Random Forest fue pequeña, por lo que no se considera demostrada una superioridad estadística de Ridge.
+
+#### 11.5. Evaluación de concentraciones elevadas
+
+También analicé el desempeño durante observaciones con concentraciones elevadas de PM2.5.
+
+Para ello utilicé el percentil 90 del conjunto de entrenamiento, equivalente a un umbral de 32.568 en las unidades del archivo.
+
+En el conjunto de prueba se identificaron 20 observaciones que alcanzaron o superaron ese umbral.
+
+Los resultados fueron:
+
+| Modelo | MAE en concentraciones elevadas |
+|---|---:|
+| Persistencia | 9.9416 |
+| Random Forest Regressor | 10.7245 |
+| Ridge Regression | 10.7461 |
+
+En estas observaciones, la persistencia obtuvo un menor error que ambos modelos de aprendizaje automático.
+
+Este resultado es importante porque demuestra que un modelo con buen desempeño promedio puede presentar limitaciones durante episodios de contaminación elevada.
+
+Debido al número reducido de observaciones, los resultados deben interpretarse con cautela.
+
+#### 11.6. Selección del modelo candidato
+
+Con base en las métricas obtenidas, seleccioné Ridge Regression como modelo candidato principal del experimento.
+
+La decisión se fundamenta en:
+
+- Menor MAE promedio de validación cruzada.
+- Menor MAE y RMSE en el conjunto de prueba.
+- Mayor R² entre los dos modelos entrenados.
+- Menor tiempo de ajuste de hiperparámetros.
+- Mayor sencillez de implementación e interpretación.
+
+Sin embargo, esta selección corresponde al alcance académico del proyecto y no implica que el modelo esté preparado para utilizarse en un sistema operativo de alertas ambientales.
+
+#### 11.7. Registro de experimentos en MLflow
+
+Utilicé MLflow para registrar los hiperparámetros, las métricas de validación y prueba, los archivos de evaluación y los modelos entrenados.
+
+El experimento principal del notebook se denominó:
+
+`RAMA_PM25_Actividad5`
+
+Las ejecuciones definitivas fueron:
+
+| Modelo | Run ID definitivo |
+|---|---|
+| Ridge Regression | `73339b012c7640e6bb99744dc3018c2d` |
+| Random Forest Regressor | `3c164f2beea644eba2f4068cb3b7beb6` |
+
+Durante el registro inicial de Random Forest se presentó una incidencia de serialización que dejó una ejecución y un modelo con estado `FAILED`.
+
+La ejecución original se conservó y el modelo se recuperó mediante una nueva ejecución vinculada con la anterior, utilizando `cloudpickle`.
+
+Posteriormente se verificó que ambos modelos podían recuperarse desde MLflow y generar las mismas predicciones originales.
+
+También se generó un respaldo del seguimiento denominado `mlflow_rama_final.zip`, cuya integridad estructural fue comprobada.
+
+La restauración integral de ese respaldo en un entorno nuevo continúa pendiente de verificación.
 
 ### 12. Limitaciones y consideraciones
 
-- El dataset contiene registros históricos hasta mayo de 2023.
-- Los resultados no deben interpretarse como predicciones operativas en tiempo real.
-- Las unidades de medición y el procedimiento de agregación requieren confirmación documental.
-- Las observaciones atípicas se conservaron inicialmente y deberán considerarse durante la evaluación.
-- El modelo supondrá que los promedios de contaminantes del día actual están disponibles antes de predecir el día siguiente.
-- La capacidad de generalización se evaluará sobre observaciones cronológicamente posteriores al entrenamiento.
+Aunque el proyecto permitió obtener resultados reproducibles, identifiqué algunas limitaciones importantes.
+
+**Periodo de los datos.** El conjunto utilizado contiene registros hasta mayo de 2023. Por tanto, los resultados corresponden al comportamiento histórico incluido en el experimento y no deben interpretarse como predicciones actuales.
+
+**Unidades y agregación.** Antes de interpretar las predicciones en términos de calidad del aire, es necesario confirmar las unidades de medición y el procedimiento mediante el cual se obtuvieron los valores diarios del archivo original.
+
+**Disponibilidad de información.** El experimento supone que las variables del día actual están disponibles al momento de estimar la concentración del día siguiente. Una implementación operativa tendría que verificar los horarios reales de publicación y disponibilidad de cada contaminante.
+
+**Concentraciones elevadas.** Ambos modelos presentaron mayores errores durante las observaciones de PM2.5 elevadas. Por ello, no sería adecuado utilizar sus resultados directamente para emitir alertas ambientales sin validaciones adicionales.
+
+**Generalización.** La evaluación se realizó sobre un periodo histórico reservado. Aunque los modelos mejoraron frente a persistencia, esto no garantiza que mantengan el mismo desempeño ante cambios futuros en las condiciones ambientales.
+
+**Alcance de Grid Search.** La búsqueda se limitó a un conjunto definido de hiperparámetros. En Ridge, el mejor valor de `alpha` coincidió con el límite superior evaluado, por lo que podrían existir configuraciones adicionales de interés.
+
+**Reproducibilidad del entorno.** Se documentaron las versiones principales de las bibliotecas y se verificó la ejecución independiente del script dentro de Google Colab. Aún sería conveniente comprobar la instalación y ejecución en un entorno completamente nuevo.
+
+**Persistencia de experimentos.** El almacenamiento utilizado por Colab es temporal. Los respaldos deben conservarse fuera de la sesión y probarse mediante un procedimiento de restauración.
+
+Como recomendaciones para una posible continuación del proyecto, considero conveniente ampliar las pruebas durante episodios de contaminación elevada, incorporar información meteorológica, verificar la disponibilidad operativa de los datos y establecer mecanismos de monitoreo del desempeño de los modelos.
+
+También sería necesario evaluar periódicamente la degradación del modelo, mantener el versionamiento de datos y dependencias y definir criterios para su actualización.
 
 ### 13. Estado del proyecto
 
-**Completado:**
+**Actividades completadas:**
 
-- Creación y organización del repositorio.
-- Incorporación de datos originales.
+- Creación y organización del repositorio en GitHub.
+- Incorporación del dataset original.
 - Diagnóstico de calidad y análisis exploratorio.
 - Ingeniería de características.
-- Preparación y división cronológica.
-- Validación del script `datos_prep.py`.
-- Generación y versionamiento del dataset preparado.
+- Preparación del dataset para modelado.
+- División cronológica de entrenamiento y prueba.
+- Implementación y validación de `datos_prep.py`.
+- Generación y versionamiento de `datos_limp.csv`.
+- Desarrollo del notebook de 14 celdas.
+- Entrenamiento inicial de dos algoritmos.
+- Ajuste de hiperparámetros mediante Grid Search.
+- Validación cruzada temporal.
+- Evaluación final con MAE, RMSE y R².
+- Comparación frente a un modelo de persistencia.
+- Evaluación de concentraciones elevadas.
+- Registro de experimentos y modelos en MLflow.
+- Recuperación y verificación de los modelos registrados.
+- Creación y ejecución independiente de `train.py`.
+- Reproducción de las métricas dentro de la tolerancia establecida.
+- Documentación de las dependencias principales en `requirements.txt`.
+- Generación del respaldo final de MLflow.
 
-**Pendiente:**
+**Actividades pendientes de cierre:**
 
-- Implementación de `train.py`.
-- Entrenamiento y ajuste de modelos.
-- Configuración y registro de experimentos en MLflow.
-- Análisis comparativo de resultados.
-- Evidencias de ejecución y reporte técnico final.
+- Verificar la instalación completa de dependencias en un entorno limpio.
+- Comprobar la restauración integral del respaldo de MLflow.
+- Completar la actualización de `CHANGELOG.md`.
+- Organizar las evidencias visuales de los experimentos.
+- Elaborar el reporte técnico académico.
+- Preparar y verificar el archivo ZIP final de entrega.
 
 ### 14. Referencias
 
@@ -235,3 +533,7 @@ Secretaría del Medio Ambiente de la Ciudad de México. (s. f.). *Red Automátic
 Scikit-learn developers. (s. f.). *Scikit-learn: Machine learning in Python*. https://scikit-learn.org/stable/
 
 MLflow. (s. f.). *MLflow documentation*. https://mlflow.org/docs/latest/
+
+Python Software Foundation. (s. f.). *Python documentation*. https://docs.python.org/3/
+
+Pandas development team. (s. f.). *Pandas documentation*. https://pandas.pydata.org/docs/
