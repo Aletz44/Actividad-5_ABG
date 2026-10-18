@@ -8,7 +8,7 @@ Este archivo documenta los principales cambios realizados durante el desarrollo 
 
 Su propósito es mantener un registro de las modificaciones, las decisiones técnicas y los resultados obtenidos, facilitando la trazabilidad y reproducción de los experimentos.
 
-Las versiones 0.1.0 a 0.8.0 representan etapas documentales del proyecto. No corresponden necesariamente a etiquetas de versión publicadas en Git. Las fechas exactas de los cambios pueden consultarse en el historial de commits de GitHub.
+Las versiones 0.1.0 a 0.9.0 representan etapas documentales del proyecto. No corresponden necesariamente a etiquetas de versión publicadas en Git. Las fechas exactas de los cambios pueden consultarse en el historial de commits de GitHub.
 
 ---
 
@@ -306,22 +306,59 @@ Esta validación confirmó la reproducibilidad dentro del entorno utilizado, aun
 - Identificación de `cloudpickle==3.1.2`.
 - Actualización del archivo `README.md`.
 - Incorporación de resultados finales, instrucciones de reproducción y limitaciones del proyecto.
-- Consolidación del notebook `fuentes/entrena.ipynb` con 14 celdas definitivas.
-- Eliminación de celdas temporales utilizadas para las comprobaciones auxiliares.
+- Consolidación inicial de las 14 celdas experimentales de `fuentes/entrena.ipynb`.
+- Posterior incorporación de celdas complementarias de consulta y generación de evidencias de MLflow.
 
 ---
 
-## Actividades pendientes de cierre
+## [0.9.0] - Restauración funcional de MLflow y validación del entorno
 
-Las siguientes actividades corresponden a la preparación final de los entregables:
+### Restauración y recuperación de modelos
 
-- Comprobar la instalación de las dependencias en un entorno limpio.
-- Verificar la restauración integral del respaldo de MLflow.
-- Obtener y organizar las capturas de pantalla de los experimentos.
-- Confirmar documentalmente las unidades y la metodología de agregación del dataset original.
-- Elaborar el reporte técnico académico con metodología, resultados, interpretación, limitaciones, deuda técnica y recomendaciones MLOps.
-- Integrar las referencias de información consultada en formato APA.
-- Preparar el archivo ZIP final y comprobar que contiene todos los entregables solicitados.
+- Creación e incorporación a GitHub del notebook `fuentes/Validacion_Restauracion_MLflow_ABG.ipynb`.
+- Restauración de `mlflow_rama_final.zip` en una nueva sesión de Google Colab.
+- Verificación de la integridad del ZIP y extracción de 27 archivos.
+- Comprobación de integridad de SQLite y de sus 65 tablas, así como del manifiesto y la huella SHA-256 del dataset preparado.
+- Identificación y corrección de diez referencias absolutas a artefactos en la base de datos **restaurada**, sin alterar el ZIP original.
+- Recuperación de Ridge Regression desde `model.skops` mediante `skops` y de Random Forest Regressor desde `model.pkl` mediante `cloudpickle`.
+- Verificación del estado `READY` de ambos modelos definitivos y generación de tres predicciones de ejemplo por modelo.
+- Recuperación de los archivos `evaluacion/predicciones_prueba.csv` y `evaluacion/resumen_modelo.json` asociados con cada ejecución definitiva.
+- Comprobación de 12 métricas de validación y prueba, y recálculo de MAE, RMSE y R² a partir de 609 predicciones de prueba por modelo.
+- Confirmación de coincidencia entre las métricas recalculadas y las registradas originalmente, sin reentrenar los modelos.
+
+### Evidencias de seguimiento
+
+- Consulta mediante la API de MLflow de seis ejecuciones históricas, 16 parámetros de los modelos definitivos y 12 métricas.
+- Verificación de tres registros de modelo: dos con estado `READY` y el registro fallido original de Random Forest.
+- Generación y descarga de `evidencias_mlflow.zip`, con cuatro imágenes PNG, cuatro CSV y un archivo explicativo.
+- Identificación de las imágenes como representaciones documentales de consultas a la API, **no** como capturas de la interfaz gráfica de MLflow.
+
+### Verificación de dependencias
+
+- Descarga independiente del repositorio desde GitHub.
+- Creación de un entorno virtual aislado mediante `virtualenv` con Python 3.13.16.
+- Instalación correcta de las dependencias declaradas en `requirements.txt`.
+- Ejecución satisfactoria de `pip check`, sin requisitos incompatibles detectados.
+- Importación satisfactoria de NumPy 2.1.3, Pandas 2.2.3, Matplotlib 3.10.0, Seaborn 0.13.2, Scikit-learn 1.6.1, MLflow 3.17.1 y Cloudpickle 3.1.2.
+- Resolución de una incompatibilidad de configuración del backend interactivo de Matplotlib heredado de Colab mediante el backend `Agg`.
+- La prueba verificó instalación e importaciones; no repitió el entrenamiento completo en ese entorno virtual.
+
+### Resultado
+
+La restauración funcional fue satisfactoria en una nueva sesión de Google Colab. Los modelos, las métricas y los artefactos de evaluación pudieron recuperarse y verificarse sin reentrenamiento. La portabilidad a otros sistemas operativos no ha sido comprobada y el respaldo requiere adaptar rutas absolutas cuando se restaura en otra ubicación.
+
+---
+
+## Actividades de cierre académico y entrega
+
+Las comprobaciones técnicas planificadas se completaron. Permanecen pendientes:
+
+- Confirmar documentalmente las unidades de medición y la metodología de agregación del dataset RAMA, o explicar expresamente la limitación documental.
+- Organizar las evidencias, los respaldos y los archivos necesarios para la entrega.
+- Elaborar el reporte técnico académico con metodología, resultados, análisis crítico, limitaciones, deuda técnica, recomendaciones MLOps, conclusiones y referencias APA.
+- Preparar y verificar el archivo ZIP definitivo con los entregables solicitados.
+
+Estas actividades se documentarán como completadas cuando hayan sido realizadas y verificadas.
 
 ---
 
@@ -331,12 +368,10 @@ Los archivos originales y preparados se conservan por separado para facilitar la
 
 La preparación puede reproducirse mediante `datos_prep.py`, mientras que el entrenamiento y registro de modelos pueden ejecutarse mediante `train.py`.
 
-Los experimentos utilizan una semilla fija de 42, una división cronológica y validación cruzada temporal.
+Los experimentos utilizan una semilla fija de 42, una división cronológica y validación cruzada temporal. Las versiones principales de las dependencias se documentan en `requirements.txt`.
 
-Las versiones principales de las dependencias se documentan en `requirements.txt`.
+El registro de parámetros, métricas y modelos se realizó mediante MLflow, conservando los identificadores de las ejecuciones y los artefactos asociados. La incidencia de serialización de Random Forest se mantuvo documentada para preservar el historial técnico.
 
-El registro de parámetros, métricas y modelos se realizó mediante MLflow, conservando los identificadores de las ejecuciones y los artefactos asociados.
+La ejecución independiente de `train.py` reprodujo los resultados dentro de la tolerancia establecida. En una nueva sesión de Colab, el respaldo de MLflow permitió recuperar los dos modelos definitivos y recalcular las métricas de evaluación desde los artefactos restaurados. También se verificó la instalación e importación de las dependencias en un entorno virtual aislado.
 
-La incidencia de serialización de Random Forest se mantuvo documentada para preservar el historial técnico del proyecto.
-
-La validación independiente confirmó la reproducción de los resultados en el entorno utilizado, mientras que la portabilidad completa y la restauración del respaldo continúan como verificaciones pendientes.
+Estas comprobaciones no demuestran portabilidad universal: la restauración necesitó actualizar rutas absolutas y no se validaron otros sistemas operativos.
