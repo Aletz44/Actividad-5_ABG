@@ -1,0 +1,14 @@
+# TAREA 5. Gestion de Proyectos de Inteligencia Artificial
+# Proyecto: Prediccion de PM2.5 en la Ciudad de Mexico
+
+# Dependencias principales del proyecto.
+# Versiones registradas durante la ejecucion en Google Colab.
+# Entorno de referencia: Python 3.13.16
+
+numpy==2.1.3
+pandas==2.2.3
+matplotlib==3.10.0
+seaborn==0.13.2
+scikit-learn==1.6.1
+mlflow==3.17.1
+cloudpickle
