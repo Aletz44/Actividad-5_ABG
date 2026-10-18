@@ -298,6 +298,30 @@ También verifiqué que el experimento independiente de MLflow contuviera dos ej
 
 Esta prueba confirmó la reproducibilidad dentro del entorno utilizado. No representa todavía una validación completa de portabilidad en un sistema operativo o entorno Python diferente.
 
+#### 9.6. Restauración y validación de dependencias
+
+Como comprobación adicional de reproducibilidad, realicé una prueba de restauración de los experimentos de MLflow en una nueva sesión de Google Colab, utilizando el respaldo `mlflow_rama_final.zip`.
+
+El procedimiento se documentó en el notebook complementario `fuentes/Validacion_Restauracion_MLflow_ABG.ipynb`.
+
+La prueba incluyó la extracción del respaldo, la verificación de integridad de SQLite, la actualización de las rutas locales de almacenamiento y la recuperación de los dos modelos definitivos.
+
+Ridge Regression se recuperó mediante su archivo `model.skops`, mientras que Random Forest Regressor se recuperó mediante `model.pkl`, utilizando los formatos de serialización `skops` y `cloudpickle`, respectivamente.
+
+Ambos modelos conservaron su estado `READY` y pudieron generar predicciones en la nueva sesión.
+
+Posteriormente se recuperaron los archivos de evaluación de los dos modelos. Se verificaron las métricas registradas y se recalcularon MAE, RMSE y R² a partir de los 609 registros de prueba de cada modelo.
+
+Los resultados coincidieron con los valores almacenados originalmente en MLflow, sin necesidad de repetir el entrenamiento.
+
+Adicionalmente, se realizó una instalación de las dependencias de `requirements.txt` en un entorno virtual aislado dentro de Google Colab, utilizando Python 3.13.16.
+
+La instalación finalizó correctamente, `pip check` no identificó dependencias incompatibles y las siete bibliotecas principales pudieron importarse con las versiones documentadas.
+
+Para ejecutar Matplotlib fuera de la interfaz interactiva de Colab se utilizó el backend `Agg`.
+
+Estas comprobaciones fortalecen la reproducibilidad del proyecto, aunque no equivalen a una validación en todos los sistemas operativos o configuraciones posibles.
+
 ### 10. Integridad y versionamiento
 
 El dataset original se conserva sin modificar sus mediciones.
@@ -483,9 +507,9 @@ Aunque el proyecto permitió obtener resultados reproducibles, identifiqué algu
 
 **Alcance de Grid Search.** La búsqueda se limitó a un conjunto definido de hiperparámetros. En Ridge, el mejor valor de `alpha` coincidió con el límite superior evaluado, por lo que podrían existir configuraciones adicionales de interés.
 
-**Reproducibilidad del entorno.** Se documentaron las versiones principales de las bibliotecas y se verificó la ejecución independiente del script dentro de Google Colab. Aún sería conveniente comprobar la instalación y ejecución en un entorno completamente nuevo.
+**Reproducibilidad del entorno.** Se verificó la instalación de las dependencias principales en un entorno virtual aislado y la ejecución independiente del script de entrenamiento dentro de Google Colab. La compatibilidad con otros sistemas operativos y configuraciones de Python no fue evaluada.
 
-**Persistencia de experimentos.** El almacenamiento utilizado por Colab es temporal. Los respaldos deben conservarse fuera de la sesión y probarse mediante un procedimiento de restauración.
+**Persistencia de experimentos.** Se comprobó la restauración funcional de los experimentos y modelos de MLflow en una nueva sesión de Google Colab. Para recuperar los artefactos fue necesario actualizar las rutas absolutas de almacenamiento en la copia restaurada. Por tanto, el respaldo requiere este ajuste cuando se utiliza en una ubicación diferente.
 
 Como recomendaciones para una posible continuación del proyecto, considero conveniente ampliar las pruebas durante episodios de contaminación elevada, incorporar información meteorológica, verificar la disponibilidad operativa de los datos y establecer mecanismos de monitoreo del desempeño de los modelos.
 
@@ -493,38 +517,85 @@ También sería necesario evaluar periódicamente la degradación del modelo, ma
 
 ### 13. Estado del proyecto
 
+El proyecto ha completado las etapas de preparación y versionamiento de datos, desarrollo experimental, entrenamiento, ajuste de hiperparámetros, evaluación de modelos y registro de experimentos mediante MLflow.
+
+También se han realizado satisfactoriamente las comprobaciones de reproducibilidad, incluyendo la ejecución independiente del script de entrenamiento, la restauración funcional de los modelos desde un respaldo y la validación de las dependencias en un entorno virtual aislado.
+
+Actualmente, el proyecto se encuentra en la fase de cierre académico y preparación de los entregables finales.
+
 **Actividades completadas:**
 
-- Creación y organización del repositorio en GitHub.
-- Incorporación del dataset original.
-- Diagnóstico de calidad y análisis exploratorio.
-- Ingeniería de características.
-- Preparación del dataset para modelado.
+**Preparación y análisis de datos**
+
+- Creación y organización del repositorio `Actividad-5_ABG` en GitHub.
+- Incorporación y conservación del dataset original RAMA.
+- Diagnóstico de calidad y análisis exploratorio de los registros.
+- Verificación de valores faltantes, duplicados, fechas y posibles valores atípicos.
+- Análisis temporal de las concentraciones de PM2.5.
+- Ingeniería de características y creación de la variable objetivo `PM25_siguiente_dia`.
+- Preparación del dataset para modelado, con 3,043 registros y 17 variables predictoras.
 - División cronológica de entrenamiento y prueba.
-- Implementación y validación de `datos_prep.py`.
-- Generación y versionamiento de `datos_limp.csv`.
-- Desarrollo del notebook de 14 celdas.
-- Entrenamiento inicial de dos algoritmos.
-- Ajuste de hiperparámetros mediante Grid Search.
-- Validación cruzada temporal.
-- Evaluación final con MAE, RMSE y R².
-- Comparación frente a un modelo de persistencia.
-- Evaluación de concentraciones elevadas.
-- Registro de experimentos y modelos en MLflow.
-- Recuperación y verificación de los modelos registrados.
-- Creación y ejecución independiente de `train.py`.
-- Reproducción de las métricas dentro de la tolerancia establecida.
-- Documentación de las dependencias principales en `requirements.txt`.
-- Generación del respaldo final de MLflow.
+- Implementación y validación del script `datos_prep.py`.
+- Generación, verificación y versionamiento de `datos_limp.csv`.
 
-**Actividades pendientes de cierre:**
+**Entrenamiento y evaluación de modelos**
 
-- Verificar la instalación completa de dependencias en un entorno limpio.
-- Comprobar la restauración integral del respaldo de MLflow.
-- Completar la actualización de `CHANGELOG.md`.
-- Organizar las evidencias visuales de los experimentos.
-- Elaborar el reporte técnico académico.
-- Preparar y verificar el archivo ZIP final de entrega.
+- Desarrollo del notebook principal `entrena.ipynb`.
+- Entrenamiento inicial de Ridge Regression y Random Forest Regressor.
+- Configuración de validación cruzada temporal mediante `TimeSeriesSplit`.
+- Ajuste de hiperparámetros mediante `GridSearchCV`.
+- Evaluación de los modelos utilizando MAE, RMSE y R².
+- Comparación de los resultados frente a un modelo de persistencia.
+- Evaluación del desempeño durante concentraciones elevadas de PM2.5.
+- Selección de Ridge Regression como modelo candidato principal del experimento, considerando sus métricas de validación y prueba.
+
+**Registro de experimentos y reproducibilidad**
+
+- Configuración del experimento `RAMA_PM25_Actividad5` en MLflow.
+- Registro de hiperparámetros, métricas, ejecuciones y artefactos de evaluación.
+- Registro y recuperación de los modelos entrenados.
+- Identificación y resolución de una incidencia de serialización durante el registro inicial de Random Forest Regressor.
+- Conservación del historial de la ejecución fallida y de su posterior recuperación.
+- Generación del respaldo `mlflow_rama_final.zip`.
+- Verificación de la integridad estructural del respaldo y de su base de datos SQLite.
+- Restauración funcional de MLflow en una nueva sesión de Google Colab.
+- Actualización de las referencias de almacenamiento en la copia restaurada.
+- Recuperación de Ridge Regression mediante el formato `skops`.
+- Recuperación de Random Forest Regressor mediante el formato `cloudpickle`.
+- Verificación del estado `READY` de ambos modelos definitivos.
+- Recuperación de los artefactos de evaluación y comprobación de las métricas originales.
+- Recálculo satisfactorio de MAE, RMSE y R² a partir de los 609 registros de prueba de cada modelo.
+- Confirmación de que la restauración no requirió volver a entrenar los modelos.
+
+**Validación independiente y documentación técnica**
+
+- Implementación del script independiente `fuentes/train.py`.
+- Ejecución satisfactoria del script desde una copia independiente del repositorio.
+- Reproducción de las métricas originales dentro de la tolerancia establecida.
+- Registro independiente de los modelos en el experimento `RAMA_PM25_TrainScript`.
+- Generación de cuatro evidencias documentales mediante consultas a la API de MLflow.
+- Exportación de las evidencias en archivos PNG y CSV, agrupados en `evidencias_mlflow.zip`.
+- Creación de `requirements.txt` con las dependencias principales del proyecto.
+- Instalación satisfactoria de las dependencias en un entorno virtual aislado con Python 3.13.16.
+- Verificación de compatibilidad mediante `pip check`, sin conflictos detectados.
+- Comprobación de las importaciones de NumPy, Pandas, Matplotlib, Seaborn, Scikit-learn, MLflow y Cloudpickle.
+- Validación del funcionamiento de Matplotlib mediante el backend `Agg` en el entorno aislado.
+- Incorporación del notebook complementario `fuentes/Validacion_Restauracion_MLflow_ABG.ipynb` al repositorio GitHub.
+- Actualización de la documentación metodológica y técnica en `README.md` y `CHANGELOG.md`.
+
+**Actividades de cierre académico y entrega:**
+
+El desarrollo experimental y las verificaciones técnicas previstas se encuentran completados. Para concluir formalmente la TAREA 5 se realizarán las siguientes actividades:
+
+- Confirmar documentalmente las unidades de medición y la metodología de agregación del dataset original RAMA, o dejar expresamente documentadas las limitaciones de la información disponible.
+- Actualizar el historial de cambios de `CHANGELOG.md` con los resultados definitivos de restauración de MLflow y validación de dependencias.
+- Organizar las evidencias documentales, los respaldos y los archivos del repositorio necesarios para la entrega.
+- Elaborar el reporte técnico académico, incluyendo descripción del problema, metodología, preparación de datos, entrenamiento, ajuste de hiperparámetros, resultados, análisis crítico, limitaciones, deuda técnica, recomendaciones MLOps, conclusiones y referencias APA.
+- Integrar y verificar el archivo ZIP definitivo con los entregables establecidos para la TAREA 5.
+
+Estas actividades forman parte del cierre académico del proyecto y se documentarán como completadas una vez realizadas y verificadas.
+
+**Estado general:** desarrollo técnico y validaciones de reproducibilidad completados; cierre documental y académico en proceso.
 
 ### 14. Referencias
 
